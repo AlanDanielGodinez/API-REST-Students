@@ -26,7 +26,6 @@ function deleteStudent(students, nc) {
 }
 
 function getAllStudents() {
- 
     return student;
 }
 
