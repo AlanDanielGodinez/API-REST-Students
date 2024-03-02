@@ -35,8 +35,13 @@ router.get('/fails', (req, res) => {
 //EndPoint obtener alumno específico
 router.get('/:nc', (req, res) => {
     try {
-        const nc = req.params;
-        res.status(200).json(Utilities.getStudentByNC(nc));
+        const {nc} = req.params;
+        const student = Utilities.getStudentByNC(nc);
+        if(student === undefined){
+            res.status(404).json({ Message: "Not found. Maybe he has deserted"});
+        } else {
+            res.status(200).json(Utilities.getStudentByNC(nc));
+        }
     } catch (error) {
         res.status(500).json({ Error: `Unexprected error: ${error}`});
     }
@@ -46,7 +51,12 @@ router.get('/:nc', (req, res) => {
 router.post('/', (req, res) => {
     try {
         const {nc, nombres, ap_Paterno, ap_Materno, promedio} = req.body;
-        res.status(201).json(Utilities.createStudent(nc,nombres, ap_Paterno, ap_Materno, promedio));
+        const newStudent = Utilities.createStudent(nc,nombres, ap_Paterno, ap_Materno, promedio);
+        if (newStudent === null){
+            res.status(200).json({ Message: "Already enroll" });
+        } else {
+            res.status(201).json(newStudent);
+        }
     } catch (error) {
         res.status(500).json({ Error: `Unexprected error: ${error}`});
     }
@@ -56,11 +66,11 @@ router.post('/', (req, res) => {
 //EndPoint actualizar alumno
 router.put('/:nc', (req, res) => {
     try {
-        const nc = req.params;
+        const {nc} = req.params;
         const {ap_Paterno, ap_Materno, nombres} = req.body;
         const updatedStudent = Utilities.updateStudent(nc, ap_Paterno, ap_Materno, nombres);
         if(updatedStudent === null){
-            res.status(404).json({ Message: "No existe"});
+            res.status(404).json({ Message: "Not found. Impossible to update"});
         } else{
             res.status(202).json(updatedStudent);
         }
@@ -72,9 +82,13 @@ router.put('/:nc', (req, res) => {
 //EndPoint eliminar alumno
 router.delete('/:nc', (req, res) => {
     try {
-        const nc = req.params;
+        const {nc} = req.params;
         const deletedStudent = Utilities.deleteStudent(nc);
-        res.status(202).json(deletedStudent);
+        if(deletedStudent === null){
+            res.status(404).json({ Message: "Not found. Impossible to acquired target"});
+        } else {
+            res.status(202).json(deletedStudent);
+        }
     } catch (error) {
         res.status(500).json({ Error: `Unexprected error: ${error}`});
     }

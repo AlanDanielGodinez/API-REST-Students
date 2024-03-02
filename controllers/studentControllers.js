@@ -1,26 +1,33 @@
 const Student = require("../models/student");
 const student = [
-    { nc: "204001243", name: 'Luis', ap_Paterno: 'Robles', ap_materno:"Mondragon" },
-    { nc: "204001255", name: 'Daniel', ap_Paterno: 'Robles', ap_materno: "Arjona" }
+    new Student('204001243', 'Robles', 'Mondragon', 'Luis'),
+    new Student('204001255', 'Arjona', 'Robles', 'Daniel')
 ];
 
 
-function createStudent(nc,nombres, ap_Paterno, ap_materno,promedio ) {
-    const newStudent = new Student(nc, nombres,ap_Paterno, ap_materno, promedio);
+function createStudent(nc,nombres, ap_Paterno, ap_Materno, promedio) {
+    const found = student.find(element => element.nc === nc);
+    if(found !== undefined) return null;
+    const newStudent = new Student(nc, nombres,ap_Paterno, ap_Materno, promedio);
     student.push(newStudent);
     return newStudent;
 };
 
-function updateStudent(nc, ap_Paterno, ap_materno, nombres) {
-    const index = student.findIndex(student => student.nc === nc);
+function updateStudent(nc, ap_Paterno, ap_Materno, nombres) {
+    const index = student.findIndex(element => element.nc === nc);
     if (index === -1) return null;
-    const updatedStudent = { nc, ap_Paterno, ap_materno, nombres };
-    studentList[index] = updatedStudent;
-    return updatedStudent;
+    student.at(index).nc = nc;
+    student.at(index).ap_Paterno = ap_Paterno;
+    student.at(index).ap_Materno = ap_Materno;
+    student.at(index).nombres = nombres;
+    return student.at(index);
 }
 
 function deleteStudent(nc) {
-    return student.filter(student => student.nc !== nc);
+    const index = student.findIndex(element => element.nc === nc);
+    if (index === -1) return null;
+    student.splice(index, 1);
+    return `Target acquired: Student with nc ${nc} has deserted`;
 }
 
 function getAllStudents() {
@@ -28,7 +35,7 @@ function getAllStudents() {
 }
 
 function getStudentByNC(nc) {
-    return student.find(student => student.nc === nc);
+    return student.find(element => element.nc === nc);
 }
 
 module.exports = {
