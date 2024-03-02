@@ -7,30 +7,28 @@ const student = [
 
 function createStudent(nc,nombres, ap_Paterno, ap_materno,promedio ) {
     const newStudent = new Student(nc, nombres,ap_Paterno, ap_materno, promedio);
-    
     student.push(newStudent);
     return newStudent;
 };
 
-function updateStudent(studentList, nc, ap_Paterno, ap_materno, nombres) {
-    const index = studentList.findIndex(student => student.nc === nc);
+function updateStudent(nc, ap_Paterno, ap_materno, nombres) {
+    const index = student.findIndex(student => student.nc === nc);
     if (index === -1) return null;
     const updatedStudent = { nc, ap_Paterno, ap_materno, nombres };
     studentList[index] = updatedStudent;
     return updatedStudent;
 }
 
-
-function deleteStudent(students, nc) {
-    return students.filter(student => student.nc !== nc);
+function deleteStudent(nc) {
+    return student.filter(student => student.nc !== nc);
 }
 
 function getAllStudents() {
     return student;
 }
 
-function getStudentByNC(students, nc) {
-    return students.find(student => student.nc === nc);
+function getStudentByNC(nc) {
+    return student.find(student => student.nc === nc);
 }
 
 module.exports = {
