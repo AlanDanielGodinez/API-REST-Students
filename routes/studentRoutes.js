@@ -10,25 +10,35 @@ router.get('/', (req, res) => {
     try {
         res.status(200).json(Utilities.getAllStudents());
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});        
+        res.status(500).json({ Error: `Unexprected error ${error}`});        
     }
 });
 
 //EndPoint mejores promedios
-router.get('/superior', (req, res) => {
+router.get('/best', (req, res) => {
     try {
-        res.status(200).json(Utilities.bestProm());
+        const best = Utilities.getBestStudents();
+        if(best === null){
+            res.status(200).json({ Message: 'Sorry but there are not excellent students'});
+        } else {
+            res.status(200).json(best);
+        }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
     }
 });
 
 //EndPoint reprobados
-router.get('/fails', (req, res) => {
+router.get('/faileds', (req, res) => {
     try {
-        res.status(200).json(Utilities.fails());
+        const faileds = Utilities.getFailedStudents();
+        if(faileds === null){
+            res.status(200).json({ Message: 'Congratulations! There are not failed students'});
+        } else {
+            res.status(200).json(faileds);
+        }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
     }
 });
 
@@ -43,22 +53,37 @@ router.get('/:nc', (req, res) => {
             res.status(200).json(Utilities.getStudentByNC(nc));
         }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
+    }
+});
+
+//EndPoint obtener el promedio de un alumno por su NC.
+router.get('/avg/:nc', (req, res) =>{
+    try {
+        const {nc} = req.params;
+        const avgScore = Utilities.getStudentAvg(nc);
+        if(avgScore === null){
+            res.status(404).json({ Message: 'Not found. Impossible to get an average score'});
+        } else {
+            res.status(200).json({ Message: `Student with NC ${nc} his or her average score is ${avgScore}`});
+        }
+    } catch (error) {
+        res.status(500).json({ Error: `Unexpected error ${error}`});
     }
 });
 
 //EndPoint crear alumno
 router.post('/', (req, res) => {
     try {
-        const {nc, nombres, ap_Paterno, ap_Materno, promedio} = req.body;
-        const newStudent = Utilities.createStudent(nc,nombres, ap_Paterno, ap_Materno, promedio);
+        const {nc, nombres, ap_Paterno, ap_Materno, calificaciones} = req.body;
+        const newStudent = Utilities.createStudent(nc,nombres, ap_Paterno, ap_Materno, calificaciones);
         if (newStudent === null){
             res.status(200).json({ Message: "Already enroll" });
         } else {
             res.status(201).json(newStudent);
         }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
     }
 });
 
@@ -67,15 +92,15 @@ router.post('/', (req, res) => {
 router.put('/:nc', (req, res) => {
     try {
         const {nc} = req.params;
-        const {ap_Paterno, ap_Materno, nombres} = req.body;
-        const updatedStudent = Utilities.updateStudent(nc, ap_Paterno, ap_Materno, nombres);
+        const {ap_Paterno, ap_Materno, nombres, calificaciones} = req.body;
+        const updatedStudent = Utilities.updateStudent(nc, ap_Paterno, ap_Materno, nombres, calificaciones);
         if(updatedStudent === null){
             res.status(404).json({ Message: "Not found. Impossible to update"});
         } else{
             res.status(202).json(updatedStudent);
         }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
     }
 });
 
@@ -90,7 +115,7 @@ router.delete('/:nc', (req, res) => {
             res.status(202).json(deletedStudent);
         }
     } catch (error) {
-        res.status(500).json({ Error: `Unexprected error: ${error}`});
+        res.status(500).json({ Error: `Unexprected error ${error}`});
     }
 });
 
